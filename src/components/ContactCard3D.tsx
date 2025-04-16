@@ -1,13 +1,13 @@
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
-import { ContactShadows, Environment, Float, Text3D, useTexture } from "@react-three/drei";
+import { ContactShadows, Environment, Float, OrbitControls } from "@react-three/drei";
 import { Mail, Phone } from "lucide-react";
 import * as THREE from "three";
 
 // Card component using Three.js
-const Card3D = () => {
+const DebitCard = () => {
   // Card dimensions (credit card proportions)
   const width = 8.56;
   const height = 5.4;
@@ -19,7 +19,7 @@ const Card3D = () => {
       floatIntensity={0.4}
     >
       <group>
-        {/* Front of card - main body */}
+        {/* Front of card - main body with gradient material */}
         <mesh castShadow receiveShadow scale={[1, 1, 0.05]} position={[0, 0, 0]}>
           <boxGeometry args={[width, height, 0.2]} />
           <meshPhysicalMaterial 
@@ -67,17 +67,31 @@ const Card3D = () => {
 const ContactCard3D = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false); // Start as invisible until we check the route
   
-  // Check if device is mobile
   useEffect(() => {
+    // Set visibility based on route
+    const checkRoute = () => {
+      const path = window.location.pathname;
+      setIsVisible(path !== '/contact'); // Hide on contact page
+    };
+    
+    checkRoute();
+    window.addEventListener('popstate', checkRoute);
+    
+    // Check if device is mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
     
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('popstate', checkRoute);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   // Animation based on scroll position
@@ -87,7 +101,7 @@ const ContactCard3D = () => {
   const y = useTransform(
     scrollYProgress, 
     [0, 1], 
-    [0, window.innerHeight - 300]
+    [0, 100]
   );
   
   const rotate = useTransform(
@@ -102,18 +116,12 @@ const ContactCard3D = () => {
     [0, 15, 5]
   );
 
-  // Check if current path is contact page
-  useEffect(() => {
-    const path = window.location.pathname;
-    setIsVisible(path !== '/contact'); // Hide on contact page
-  }, []);
-
   if (!isVisible) return null;
 
   return (
     <motion.div 
       ref={ref}
-      className="w-[320px] h-[200px] pointer-events-auto cursor-pointer"
+      className="fixed bottom-8 right-8 w-[320px] h-[200px] pointer-events-auto cursor-pointer z-50 shadow-2xl"
       style={{ 
         y: isMobile ? 0 : y,
         rotateZ: rotate,
@@ -126,12 +134,28 @@ const ContactCard3D = () => {
     >
       <div className="w-full h-full relative">
         <div className="absolute inset-0 z-10 rounded-xl overflow-hidden shadow-2xl">
-          <Canvas shadows camera={{ position: [0, 0, 8], fov: 45 }}>
+          <Canvas 
+            shadows 
+            camera={{ position: [0, 0, 8], fov: 45 }}
+            gl={{ 
+              powerPreference: "high-performance",
+              antialias: true,
+              stencil: false,
+              depth: true
+            }}
+          >
+            <color attach="background" args={["#050505"]} />
             <Environment preset="city" />
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 10]} intensity={1} castShadow />
-            <Card3D />
+            <DebitCard />
             <ContactShadows position={[0, -2.5, 0]} opacity={0.7} scale={10} blur={2} far={3} />
+            <OrbitControls 
+              enableZoom={false} 
+              enablePan={false}
+              minPolarAngle={Math.PI / 2 - 0.3} 
+              maxPolarAngle={Math.PI / 2 + 0.3}
+            />
           </Canvas>
         </div>
         

@@ -15,9 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
       <main className="flex-1 pt-16">
         {children}
       </main>
-      <div className="fixed bottom-8 right-8 z-50">
-        <ContactCard3D />
-      </div>
+      <ContactCard3D />
       <Footer />
     </div>
   );
