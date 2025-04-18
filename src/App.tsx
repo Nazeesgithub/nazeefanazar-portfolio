@@ -11,6 +11,7 @@ import Certificates from "./pages/Certificates";
 import Services from "./pages/Services";
 import Projects from "./pages/Projects";
 import Contact from "./pages/Contact";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/services" element={<Layout><Services /></Layout>} />
           <Route path="/projects" element={<Layout><Projects /></Layout>} />
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
+          <Route path="/admin" element={<Layout><Admin /></Layout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

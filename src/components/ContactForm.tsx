@@ -43,10 +43,13 @@ const ContactForm = () => {
       // Simulate API call with timeout
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
-      // Add to our "virtual database"
+      // Add to our "virtual database" - making sure all required fields are provided
       addFeedback({
         id: Date.now().toString(),
-        ...values,
+        name: values.name,
+        email: values.email,
+        subject: values.subject,
+        message: values.message,
         createdAt: new Date().toISOString(),
       });
       
