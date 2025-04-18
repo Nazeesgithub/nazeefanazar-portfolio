@@ -2,7 +2,6 @@
 import { ReactNode } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import ContactCard3D from './ContactCard3D';
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,7 +14,6 @@ const Layout = ({ children }: LayoutProps) => {
       <main className="flex-1 pt-16">
         {children}
       </main>
-      <ContactCard3D />
       <Footer />
     </div>
   );
